@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('CredentialID_DockerHubPWD')
+        DOCKER_USERNAME = 'haneefmhmmd' // Manually set your Docker Hub username
         DOCKER_IMAGE = 'haneefmhmmd/hello-world-app'
     }
 
@@ -27,8 +27,12 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-                // Docker login using credentials stored in Jenkins
-                sh "docker login -u haneefmhmmd -p ${DOCKER_HUB_CREDENTIALS}"
+                // Docker login using Jenkins credentials for password
+                withCredentials([string(credentialsId: 'CredentialID_DockerHubPWD', variable: 'DOCKER_PASSWORD')]) {
+                    sh """
+                    echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                    """
+                }
             }
         }
 
